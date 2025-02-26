@@ -1,3 +1,13 @@
+# What do I do if LineageOS doesn't have a kernel repo for my device's SOC? (assuming it's SMx3xx, where the second digit is specifically 3)
+- The second digit of the SOC's codename matters, but look for the closest. For example, the Snapdragon 4 Gen 1 is the SM4375, and the closest that LineageOS already offers is the SM6375. In that case, make a fork of LineageOS/android_kernel_motorola_sm6375. All the latest mainstream devices run GKI kernels, meaning that it shouldn't matter as long as the second digit of the SOC's codename is the same.
+- Go to https://github.com/MotorolaMobilityLLC/kernel-msm/ and find the branch or tag for your device's build ID. For example, fogo (Moto G 5G 2024) has a build ID that starts with U1UFNS34. If there isn't one available, submit a request in the issues tab, such as https://github.com/MotorolaMobilityLLC/kernel-msm/issues/672 after reviewing all the kernel-*-devicetree repos under MotorolaMobilityLLC to make sure if there's a branch or tag for your device's build ID.
+- If available, find the tag for your device's build ID in both kernel-devicetree and all kernel-*-devicetree repos, and download them.
+- First, extract the `qcom` folder of `kernel-devicetree-MMI-*` into `arch/arm64/boot/dts`, saying no to replacing any file.
+- Extract all subsequent `kernel-*-MMI-*` ZIPs into `arch/arm64/boot/dts/qcom`, while skipping the `bindings` folder and saying no to replacing any file.
+- In the `Makefile` in `arch/arm64/boot/dts/qcom`, add each new `.dts` (but not `.dtsi`), and start them with `dtb-$(CONFIG_ARCH_QCOM)	+= ` and replace each `.dts` with `.dtb`.
+- Copy your device's boot.img to the kernel root directory, open your terminal there, and run the following: `scripts/extract-ikconfig boot.img > arch/arm64/configs/[device codename]_defconfig`.
+
+
 # How do I submit patches to Android Common Kernels
 
 1. BEST: Make all of your changes to upstream Linux. If appropriate, backport to the stable releases.
